@@ -86,7 +86,7 @@ enum IndicatorRuleFlag {
 struct CastParam : public dmlc::Parameter<CastParam> {
   int dtype;
   DMLC_DECLARE_PARAMETER(CastParam) {
-    DMLC_DECLARE_DTYPE_FIELD(dtype)
+    DMLC_DECLARE_FIELD(dtype)
     .describe("Output data type.");
   }
 };
@@ -110,6 +110,20 @@ struct IndicatorParam : public dmlc::Parameter<IndicatorParam> {
         NOT in axis instead.)code");
     DMLC_DECLARE_FIELD(exclude).set_default(false)
     .describe("Whether to apply rule on axis that are NOT in axis instead.");
+
+struct ShiftParam : public dmlc::Parameter<ShiftParam> {
+  int bit;
+  DMLC_DECLARE_PARAMETER(ShiftParam) {
+    DMLC_DECLARE_FIELD(bit);
+  }
+};
+
+struct ClipParam : public dmlc::Parameter<ClipParam> {
+  float a_min;
+  float a_max;
+  DMLC_DECLARE_PARAMETER(ClipParam) {
+    DMLC_DECLARE_FIELD(a_min);
+    DMLC_DECLARE_FIELD(a_max);
   }
 };
 

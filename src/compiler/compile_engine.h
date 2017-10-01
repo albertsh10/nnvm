@@ -109,6 +109,9 @@ int GetTypeFlag(tvm::Type type);
  */
 tvm::Type GetTVMType(int type_flag);
 
+// convert from type flag to tvm type.
+tvm::Type GetTVMType(int type_flag);
+
 }  // namespace compiler
 }  // namespace nnvm
 
