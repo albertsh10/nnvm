@@ -11,9 +11,10 @@
 #include <nnvm/compiler/op_attr_types.h>
 #include <nnvm/compiler/util.h>
 #include <nnvm/top/tensor.h>
+#include <topi/broadcast.h>
 #include "../op_common.h"
 #include "../elemwise_op_common.h"
-#include "topi/broadcast.h"
+#include "../broadcast_op_common.h"
 
 namespace nnvm {
 namespace top {
@@ -86,6 +87,7 @@ So with `shape=(2,0)`, we will obtain the same result as in the above example.
 .set_num_outputs(1)
 .set_support_level(4);
 
+<<<<<<< 2204abbf3ab306232009a6ba95b50a2fc6eefd11
 // binary broadcast op
 inline bool BinaryBroadcastShape(const nnvm::NodeAttrs& attrs,
                                  std::vector<TShape>* in_attrs,
@@ -147,6 +149,8 @@ inline bool BinaryBroadcastShape(const nnvm::NodeAttrs& attrs,
   .add_argument("lhs", "Tensor", "first input")                     \
   .add_argument("rhs", "Tensor", "second input")
 
+=======
+>>>>>>> [QUANTIZATION] Add ops definition
 
 NNVM_REGISTER_BINARY_BROADCAST_OP(broadcast_add)
 .add_alias("__add_symbol__")
