@@ -149,7 +149,7 @@ def optimize(graph, shape, dtype="float32"):
     ----------
     graph : Graph
         The graph to be used in optimized.
-
+x
     Returns
     -------
     graph : Graph
@@ -341,7 +341,7 @@ def precompute_prune(graph, params):
     out_names = pre_graph.json_attr("output_names")
     if not pre_graph.symbol.list_output_names():
         return graph, params
-    with tvm.build_config(auto_unroll_max_step=0):
+    with tvm.build_config(auto_unroll_max_step=0, add_lower_pass=[]):
         out_arrs = _run_graph(pre_graph, params)
     return graph, dict(zip(out_names, out_arrs))
 

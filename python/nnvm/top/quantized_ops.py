@@ -177,6 +177,7 @@ def compute_quantized_conv2d(attrs, inputs, _):
     channels = attrs.get_int("channels")
     layout = attrs["layout"]
     shift = attrs.get_int('shift')
+    pack_channel = attrs.get_int("pack_channel")
     out_dtype = attrs['out_type']
     cmp_dtype = 'int32' # compute data type
 

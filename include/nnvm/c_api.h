@@ -157,6 +157,15 @@ NNVM_DLL int NNSymbolCopy(SymbolHandle symbol, SymbolHandle *out);
  * \return 0 when success, -1 when failure happens
  */
 NNVM_DLL int NNSymbolPrint(SymbolHandle symbol, const char **out_str);
+
+NNVM_DLL int NNSymbolCopy(SymbolHandle symbol, SymbolHandle *out);
+/*!
+ * \brief Get the child symbol
+ * \param symbol the symbol
+ * \param out output grouped symbol
+ * \return 0 when success, -1 when failure happens
+ */
+NNVM_DLL int NNSymbolGetChildren(SymbolHandle symbol, SymbolHandle* out);
 /*!
  * \brief Get string attribute from symbol
  * \param symbol the source symbol

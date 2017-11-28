@@ -441,6 +441,7 @@ struct QuantizedConv2DParam : public dmlc::Parameter<QuantizedConv2DParam> {
   bool use_bias;
   int shift;
   int out_type;
+  int pack_channel;
 
   DMLC_DECLARE_PARAMETER(QuantizedConv2DParam) {
     DMLC_DECLARE_FIELD(channels)
@@ -473,6 +474,8 @@ struct QuantizedConv2DParam : public dmlc::Parameter<QuantizedConv2DParam> {
       .describe("Whether the layer uses a bias vector.");
     DMLC_DECLARE_FIELD(shift)
     .set_default(0);
+    DMLC_DECLARE_FIELD(pack_channel)
+    .set_default(0);
     DMLC_DECLARE_FIELD(out_type)
     .set_default(kInt32)
     .add_enum("int8", kInt8)
@@ -488,6 +491,7 @@ struct QuantizedConv2DParam : public dmlc::Parameter<QuantizedConv2DParam> {
 
 DMLC_REGISTER_PARAMETER(QuantizedConv2DParam);
 
+
 inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
                                  std::vector<TShape>* in_shape,
                                  std::vector<TShape>* out_shape) {
@@ -501,6 +505,12 @@ inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
 
   TShape dshape = in_shape->at(0);
   if (dshape.ndim() == 0) return false;
+  // pack channel
+  if (param.pack_channel != 0) {
+    CHECK(dshape.ndim() == 5);
+    CHECK(dshape[4] == param.pack_channel);
+    dshape = TShape({dshape[0], dshape[1] * dshape[4], dshape[2], dshape[3]});
+  }
   dshape = ConvertLayout(dshape, param.layout, kNCHW);
 
   CHECK_EQ(dshape.ndim(), 4U) << "Input data should be 4D";
@@ -522,6 +532,15 @@ inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
   wshape = ConvertLayout(wshape, kNCHW, param.layout);
   wshape[0] *= param.groups;
 
+  // pack channel weight
+  if (param.pack_channel != 0) {
+    CHECK(param.channels % param.pack_channel == 0);
+    wshape = TShape({wshape[0] / param.pack_channel,
+                     wshape[1] / param.pack_channel,
+                     wshape[2], wshape[3],
+                     param.pack_channel, param.pack_channel});
+  }
+
   NNVM_ASSIGN_INPUT_SHAPE(attrs, *in_shape, QuantizedConv2DParam::kWeight, wshape);
   if (param.use_bias) {
     NNVM_ASSIGN_INPUT_SHAPE(attrs, *in_shape,
@@ -537,8 +556,17 @@ inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
   if (dshape[3] != 0) {
     oshape[3] = (dshape[3] + param.padding[1] * 2 - dilated_ksize_x) / param.strides[1] + 1;
   }
+  // pack channel
+  if (param.pack_channel != 0) {
+    CHECK(dshape.ndim() == 4);
+    oshape = TShape({oshape[0], oshape[1]/param.pack_channel,
+                     oshape[2], oshape[3], param.pack_channel});
+  }
   NNVM_ASSIGN_OUTPUT_SHAPE(attrs, *out_shape, 0,
                            ConvertLayout(oshape, kNCHW, param.layout));
+
+  return true;
+
   // Perform incomplete shape inference. Fill in the missing values in data shape.
   // 1) We can always fill in the batch_size.
   // 2) We can back-calculate the input height/width if the corresponding stride is 1.

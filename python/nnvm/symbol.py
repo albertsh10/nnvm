@@ -223,6 +223,24 @@ class Symbol(SymbolBase):
         else:
             raise ValueError("option need to be in {'all', 'read_only, 'aux_state'}")
 
+    def get_children(self):
+        """Gets a new grouped symbol whose output contains
+        inputs to output nodes of the original symbol.
+
+        Returns
+        -------
+        sgroup : Symbol or None
+            The children of the head node. If the symbol has no
+            inputs then ``None`` will be returned.
+        """
+        handle = _ctypes.c_void_p()
+        _check_call(_LIB.NNSymbolGetChildren(
+            self.handle, _ctypes.byref(handle)))
+        ret = Symbol(handle=handle)
+        if len(ret.list_output_names()) == 0:
+            return None
+        return ret
+
     def list_input_variables(self, option='all'):
         """List all the input variables in the symbol.
 
