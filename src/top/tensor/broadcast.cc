@@ -13,8 +13,8 @@
 #include <nnvm/top/tensor.h>
 #include <topi/broadcast.h>
 #include "../op_common.h"
-#include "../elemwise_op_common.h"
 #include "../broadcast_op_common.h"
+#include "../elemwise_op_common.h"
 
 namespace nnvm {
 namespace top {
@@ -87,58 +87,9 @@ So with `shape=(2,0)`, we will obtain the same result as in the above example.
 .set_num_outputs(1)
 .set_support_level(4);
 
-<<<<<<< 2204abbf3ab306232009a6ba95b50a2fc6eefd11
-// binary broadcast op
-inline bool BinaryBroadcastShape(const nnvm::NodeAttrs& attrs,
-                                 std::vector<TShape>* in_attrs,
-                                 std::vector<TShape>* out_attrs) {
-  CHECK_EQ(in_attrs->size(), 2U);
-  CHECK_EQ(out_attrs->size(), 1U);
-  const TShape& lhs = (*in_attrs)[0];
-  const TShape& rhs = (*in_attrs)[1];
 
-  // avoid pre-mature shape inference.
-  if (lhs.ndim() == 0 || rhs.ndim() == 0) return false;
-
-  if (lhs == rhs) {
-    NNVM_ASSIGN_INPUT_SHAPE(attrs, *out_attrs, 0, lhs);
-    return true;
-  }
-  TShape out(std::max(lhs.ndim(), rhs.ndim()));
-  dim_t bl = out.ndim() - lhs.ndim();
-  dim_t br = out.ndim() - rhs.ndim();
-  for (dim_t i = 0; i < out.ndim(); ++i) {
-    dim_t l = 1, r = 1;
-    if (i >= bl) l = lhs[i - bl];
-    if (i >= br) r = rhs[i - br];
-    if (l != r) {
-      if (l == 0 || r == 0) {
-        out[i] = 0;
-      } else {
-        CHECK(l == 1 || r == 1)
-          << "operands could not be broadcast together with shapes "
-          << lhs << " " << rhs;
-        out[i] = std::max(l, r);
-      }
-    } else {
-      out[i] = l;
-    }
-  }
-  NNVM_ASSIGN_OUTPUT_SHAPE(attrs, *out_attrs, 0, out);
-  return true;
-}
-
-
-#define NNVM_REGISTER_BINARY_BROADCAST_OP(name)                     \
-  NNVM_REGISTER_OP(name)                                            \
-  .set_num_inputs(2)                                                \
-  .set_num_outputs(1)                                               \
-  .set_attr<FInferShape>("FInferShape", BinaryBroadcastShape)       \
-  .set_attr<FInferType>("FInferType", ElemwiseType<2, 1>)           \
-  .set_attr<FInplaceOption>("FInplaceOption",                       \
-    [](const NodeAttrs& attrs) {                                    \
-      return std::vector<std::pair<int, int> >{{0, 0}, {1, 0}};     \
-    })                                                              \
+#define NNVM_REGISTER_BINARY_BROADCAST_TOPI(name)                   \
+  NNVM_REGISTER_BINARY_BROADCAST_OP(name)                           \
   .set_attr<FTVMCompute>(                                           \
     "FTVMCompute", [](const NodeAttrs& attrs,                       \
       const Array<Tensor>& inputs,                                  \
@@ -146,13 +97,9 @@ inline bool BinaryBroadcastShape(const nnvm::NodeAttrs& attrs,
         return Array<Tensor>{                                       \
           topi::name(inputs[0], inputs[1]) };                       \
     })                                                              \
-  .add_argument("lhs", "Tensor", "first input")                     \
-  .add_argument("rhs", "Tensor", "second input")
 
-=======
->>>>>>> [QUANTIZATION] Add ops definition
 
-NNVM_REGISTER_BINARY_BROADCAST_OP(broadcast_add)
+NNVM_REGISTER_BINARY_BROADCAST_TOPI(broadcast_add)
 .add_alias("__add_symbol__")
 .describe(R"code(Returns element-wise sum of the input arrays with broadcasting.
 
@@ -170,7 +117,7 @@ Example::
 )code" NNVM_ADD_FILELINE);
 
 
-NNVM_REGISTER_BINARY_BROADCAST_OP(broadcast_sub)
+NNVM_REGISTER_BINARY_BROADCAST_TOPI(broadcast_sub)
 .add_alias("__sub_symbol__")
 .describe(R"code(Returns element-wise difference of the input arrays with broadcasting.
 
@@ -188,7 +135,7 @@ Example::
 )code" NNVM_ADD_FILELINE);
 
 
-NNVM_REGISTER_BINARY_BROADCAST_OP(broadcast_mul)
+NNVM_REGISTER_BINARY_BROADCAST_TOPI(broadcast_mul)
 .add_alias("__mul_symbol__")
 .describe(R"code(Returns element-wise product of the input arrays with broadcasting.
 
@@ -205,7 +152,7 @@ Example::
 )code" NNVM_ADD_FILELINE);
 
 
-NNVM_REGISTER_BINARY_BROADCAST_OP(broadcast_div)
+NNVM_REGISTER_BINARY_BROADCAST_TOPI(broadcast_div)
 .add_alias("__div_symbol__")
 .describe(R"code(Returns element-wise division of the input arrays with broadcasting.
 

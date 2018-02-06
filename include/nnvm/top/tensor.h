@@ -110,6 +110,8 @@ struct IndicatorParam : public dmlc::Parameter<IndicatorParam> {
         NOT in axis instead.)code");
     DMLC_DECLARE_FIELD(exclude).set_default(false)
     .describe("Whether to apply rule on axis that are NOT in axis instead.");
+  }
+};
 
 struct ShiftParam : public dmlc::Parameter<ShiftParam> {
   int bit;

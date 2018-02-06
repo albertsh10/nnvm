@@ -192,14 +192,6 @@ int NNSymbolGetAttr(SymbolHandle symbol,
   API_END();
 }
 
-int NNSymbolGetChildren(SymbolHandle symbol, SymbolHandle* out) {
-  nnvm::Symbol *s = new nnvm::Symbol();
-  API_BEGIN();
-  *s = static_cast<nnvm::Symbol*>(symbol)->GetChildren();
-  *out = s;
-  API_END_HANDLE_ERROR(delete s);
-}
-
 int NNSymbolSetAttrs(SymbolHandle symbol,
                      nn_uint num_param,
                      const char** keys,
