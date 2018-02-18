@@ -86,7 +86,7 @@ enum IndicatorRuleFlag {
 struct CastParam : public dmlc::Parameter<CastParam> {
   int dtype;
   DMLC_DECLARE_PARAMETER(CastParam) {
-    DMLC_DECLARE_FIELD(dtype)
+    DMLC_DECLARE_DTYPE_FIELD(dtype)
     .describe("Output data type.");
   }
 };
