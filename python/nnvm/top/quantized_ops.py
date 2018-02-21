@@ -198,3 +198,5 @@ def compute_quantized_conv2d(attrs, inputs, _):
 def schedule_quantized_conv2d(_, outs, target):
     with tvm.target.create(target):
         return topi.generic.schedule_conv2d_nchw(outs)
+
+reg.register_pattern("quantized_conv2d", OpPattern.OUT_ELEMWISE_FUSABLE)
