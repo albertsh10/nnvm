@@ -120,15 +120,6 @@ struct ShiftParam : public dmlc::Parameter<ShiftParam> {
   }
 };
 
-struct ClipParam : public dmlc::Parameter<ClipParam> {
-  float a_min;
-  float a_max;
-  DMLC_DECLARE_PARAMETER(ClipParam) {
-    DMLC_DECLARE_FIELD(a_min);
-    DMLC_DECLARE_FIELD(a_max);
-  }
-};
-
 struct ReshapeParam : public dmlc::Parameter<ReshapeParam> {
   Tuple<int64_t> shape;
 
