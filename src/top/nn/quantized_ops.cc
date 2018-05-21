@@ -442,6 +442,7 @@ struct QuantizedConv2DParam : public dmlc::Parameter<QuantizedConv2DParam> {
   int shift;
   int out_type;
   int pack_channel;
+  int pack_batch;
 
   DMLC_DECLARE_PARAMETER(QuantizedConv2DParam) {
     DMLC_DECLARE_FIELD(channels)
@@ -476,6 +477,8 @@ struct QuantizedConv2DParam : public dmlc::Parameter<QuantizedConv2DParam> {
     .set_default(0);
     DMLC_DECLARE_FIELD(pack_channel)
     .set_default(0);
+    DMLC_DECLARE_FIELD(pack_batch)
+    .set_default(0);
     DMLC_DECLARE_FIELD(out_type)
     .set_default(kInt32)
     .add_enum("int8", kInt8)
@@ -507,9 +510,11 @@ inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
   if (dshape.ndim() == 0) return false;
   // pack channel
   if (param.pack_channel != 0) {
-    CHECK(dshape.ndim() == 5);
-    CHECK(dshape[4] == param.pack_channel);
-    dshape = TShape({dshape[0], dshape[1] * dshape[4], dshape[2], dshape[3]});
+    CHECK_NE(param.pack_batch, 0);
+    CHECK(dshape.ndim() == 6);
+    CHECK(dshape[4] == param.pack_batch);
+    CHECK(dshape[5] == param.pack_channel);
+    dshape = TShape({dshape[0] * dshape[4], dshape[1] * dshape[5], dshape[2], dshape[3]});
   }
   dshape = ConvertLayout(dshape, param.layout, kNCHW);
 
@@ -559,8 +564,8 @@ inline bool QuantizedConv2DShape(const nnvm::NodeAttrs& attrs,
   // pack channel
   if (param.pack_channel != 0) {
     CHECK(dshape.ndim() == 4);
-    oshape = TShape({oshape[0], oshape[1]/param.pack_channel,
-                     oshape[2], oshape[3], param.pack_channel});
+    oshape = TShape({oshape[0]/param.pack_batch, oshape[1]/param.pack_channel,
+                     oshape[2], oshape[3], param.pack_batch, param.pack_channel});
   }
   NNVM_ASSIGN_OUTPUT_SHAPE(attrs, *out_shape, 0,
                            ConvertLayout(oshape, kNCHW, param.layout));
