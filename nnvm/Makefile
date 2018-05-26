@@ -1,4 +1,4 @@
-ROOTDIR = $(CURDIR)
+ROOTDIR = $(CURDIR)/..
 
 ifndef config
 ifneq ("$(wildcard ./config.mk)", "")
@@ -11,7 +11,7 @@ include $(config)
 
 export LDFLAGS = -pthread -lm
 export CFLAGS = -std=c++11 -Wall -O2 -Iinclude -fPIC
-CFLAGS += -Itvm/include -Itvm/dlpack/include -Itvm/HalideIR/src -Itvm/topi/include
+CFLAGS += -I../tvm/include -I../tvm/dlpack/include -I../tvm/HalideIR/src -I../tvm/topi/include
 
 ifdef DMLC_CORE_PATH
   CFLAGS += -I$(DMLC_CORE_PATH)/include
