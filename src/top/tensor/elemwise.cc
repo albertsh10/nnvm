@@ -197,7 +197,7 @@ NNVM_REGISTER_ELEMWISE_BINARY_OP(elemwise_add)
   "FTVMCompute", [](const NodeAttrs& attrs,
                     const Array<Tensor>& inputs,
                     const Array<Tensor>& out_info) {
-      return Array<Tensor>{ topi::broadcast_add(inputs[0], inputs[1]) };
+      return Array<Tensor>{ topi::add(inputs[0], inputs[1]) };
   })
 .set_attr<FGradient>(
   "FGradient", [](const NodePtr& n,
@@ -220,7 +220,7 @@ NNVM_REGISTER_ELEMWISE_BINARY_OP(elemwise_sub)
   "FTVMCompute", [](const NodeAttrs& attrs,
                     const Array<Tensor>& inputs,
                     const Array<Tensor>& out_info) {
-      return Array<Tensor>{ topi::broadcast_sub(inputs[0], inputs[1]) };
+      return Array<Tensor>{ topi::subtract(inputs[0], inputs[1]) };
 })
 .set_attr<FGradient>(
   "FGradient", [](const NodePtr& n,
@@ -243,7 +243,7 @@ NNVM_REGISTER_ELEMWISE_BINARY_OP(elemwise_mul)
   "FTVMCompute", [](const NodeAttrs& attrs,
                     const Array<Tensor>& inputs,
                     const Array<Tensor>& out_info) {
-      return Array<Tensor>{ topi::broadcast_mul(inputs[0], inputs[1]) };
+      return Array<Tensor>{ topi::multiply(inputs[0], inputs[1]) };
 })
 .set_attr<FGradient>(
   "FGradient", [](const NodePtr& n,
@@ -268,7 +268,7 @@ NNVM_REGISTER_ELEMWISE_BINARY_OP(elemwise_div)
   "FTVMCompute", [](const NodeAttrs& attrs,
                     const Array<Tensor>& inputs,
                     const Array<Tensor>& out_info) {
-      return Array<Tensor>{ topi::broadcast_div(inputs[0], inputs[1]) };
+      return Array<Tensor>{ topi::divide(inputs[0], inputs[1]) };
 })
 .set_attr<FGradient>(
   "FGradient", [](const NodePtr& n,

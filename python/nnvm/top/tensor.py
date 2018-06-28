@@ -46,7 +46,7 @@ _fschedule_elemwise = _fschedule_injective
 def compute_lshift(attrs, inputs, _):
     data = inputs[0]
     bit = attrs.get_int("bit")
-    return topi.left_shift(data, bit)
+    return topi.left_shift(data, tvm.const(bit, data.dtype))
 reg.register_pattern("left_shift", OpPattern.ELEMWISE)
 reg.register_schedule("left_shift", _fschedule_broadcast)
 
@@ -55,7 +55,7 @@ reg.register_schedule("left_shift", _fschedule_broadcast)
 def compute_rshift(attrs, inputs, _):
     data = inputs[0]
     bit = attrs.get_int("bit")
-    return topi.right_shift(data, bit)
+    return topi.right_shift(data, tvm.const(bit, data.dtype))
 reg.register_pattern("right_shift", OpPattern.ELEMWISE)
 reg.register_schedule("right_shift", _fschedule_broadcast)
 
